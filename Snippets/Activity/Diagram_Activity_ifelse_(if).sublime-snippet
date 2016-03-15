@@ -1,0 +1,12 @@
+<snippet>
+ <content><![CDATA[
+if (${1:condition}) then (${2:result})
+    :${4:do something};
+else (${3:result})
+    :${5:do something};
+endif
+]]></content>
+ <tabTrigger>if</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Activity: if-else</description>
+</snippet>

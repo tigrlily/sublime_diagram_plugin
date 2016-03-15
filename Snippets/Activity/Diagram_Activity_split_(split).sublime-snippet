@@ -1,0 +1,12 @@
+<snippet>
+ <content><![CDATA[
+split
+    :${1:do something};
+split again
+    :${2:do something};
+end split
+]]></content>
+ <tabTrigger>split</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Activity: split</description>
+</snippet>

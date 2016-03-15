@@ -19,13 +19,20 @@ class BaseProcessor(object):
     def extract_blocks(self, view):
         raise NotImplementedError('abstract base class is abstract')
 
-    def process(self, sourceFile, text_blocks):
+    def process(self, sourceFile, text_blocks, isPreview):
         diagrams = []
+        print('Diagrams Count:'+str(len(text_blocks)))
+        dgIdx=0
+
         for block in text_blocks:
+
+            if len(text_blocks) > 1:
+                dgIdx+=1
+
             try:
-                print("Rendering diagram for block: %r" % block)
+                #print("Rendering diagram for block: %r" % block)
                 diagram = self.DIAGRAM_CLASS(self, sourceFile, block)
-                rendered = diagram.generate()
+                rendered = diagram.generate(index = dgIdx, isPreview = isPreview)
                 diagrams.append(rendered)
             except Exception as e:
                 print("Error processing diagram: %r" % e)

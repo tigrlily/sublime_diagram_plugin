@@ -1,0 +1,10 @@
+<snippet>
+ <content><![CDATA[
+header
+    ${1:header text}
+end header
+]]></content>
+ <tabTrigger>header</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>General: add header</description>
+</snippet>

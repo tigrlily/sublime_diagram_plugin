@@ -1,0 +1,12 @@
+<snippet>
+ <content><![CDATA[
+fork
+    :${1:do something};
+fork again
+    :${2:do something};
+end fork
+]]></content>
+ <tabTrigger>fork</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Activity: parallel processing</description>
+</snippet>

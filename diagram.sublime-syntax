@@ -1,0 +1,824 @@
+%YAML 1.2
+---
+name: Diagram
+file_extensions: [wsd]
+scope: source.wsd
+author: jebbs
+mail: qjebbs##gmail.com
+comment: All diagram, salt, styles, creole support. 
+
+variables:
+  wordOrQuotedWord: '(?:".+?"|\b[_\d\w]+?\b)'
+  varName: '(?:\b[$_\d\w]+?\b)'
+  diagramObject: '(?:{{wordOrQuotedWord}}|:.+?:|\[.+?\]|\(.+?\)|\b[\d\w]+?\b)'
+  colorNames: 'AliceBlue|AntiqueWhite|Aqua|Aquamarine|Azure|Beige|Bisque|Black|BlanchedAlmond|Blue|BlueViolet|Brown|BurlyWood|CadetBlue|Chartreuse|Chocolate|Coral|CornflowerBlue|Cornsilk|Crimson|Cyan|DarkBlue|DarkCyan|DarkGoldenRod|DarkGray|DarkGreen|DarkGrey|DarkKhaki|DarkMagenta|DarkOliveGreen|DarkOrchid|DarkRed|DarkSalmon|DarkSeaGreen|DarkSlateBlue|DarkSlateGray|DarkSlateGrey|DarkTurquoise|DarkViolet|Darkorange|DeepPink|DeepSkyBlue|DimGray|DimGrey|DodgerBlue|FireBrick|FloralWhite|ForestGreen|Fuchsia|Gainsboro|GhostWhite|Gold|GoldenRod|Gray|Green|GreenYellow|Grey|HoneyDew|HotPink|IndianRed|Indigo|Ivory|Khaki|Lavender|LavenderBlush|LawnGreen|LemonChiffon|LightBlue|LightCoral|LightCyan|LightGoldenRodYellow|LightGray|LightGreen|LightGrey|LightPink|LightSalmon|LightSeaGreen|LightSkyBlue|LightSlateGray|LightSlateGrey|LightSteelBlue|LightYellow|Lime|LimeGreen|Linen|Magenta|Maroon|MediumAquaMarine|MediumBlue|MediumOrchid|MediumPurple|MediumSeaGreen|MediumSlateBlue|MediumSpringGreen|MediumTurquoise|MediumVioletRed|MidnightBlue|MintCream|MistyRose|Moccasin|NavajoWhite|Navy|OldLace|Olive|OliveDrab|Orange|OrangeRed|Orchid|PaleGoldenRod|PaleGreen|PaleTurquoise|PaleVioletRed|PapayaWhip|PeachPuff|Peru|Pink|Plum|PowderBlue|Purple|Red|RosyBrown|RoyalBlue|SaddleBrown|Salmon|SandyBrown|SeaGreen|SeaShell|Sienna|Silver|SkyBlue|SlateBlue|SlateGray|SlateGrey|Snow|SpringGreen|SteelBlue|Tan|Teal|Thistle|Tomato|Turquoise|Violet|Wheat|White|WhiteSmoke|Yellow|YellowGreen'
+  colors: '(?:[0-9a-f]{6}|[0-9a-f]{3}|{{colorNames}})'
+  colorReg: '(?:\#{{colors}}(?:[-\\/]{{colors}})?\b)'
+  lineBegin: '^\s*'
+  leftArrow: '(?:(?:[ox+*]?(?:<\|?|<<|\\\\|\\|//)?)(?=[-.]))'
+  rightArrow: '(?:(?<=[-.])(?:(?:\|?>|>>|\\\\|\\|//)?[ox+*]?))'
+  noSaltSymbol: '[^|{}\^]'
+contexts:
+  main:
+    - include: Salt
+    - include: Styles
+    - include: Stereotypes
+    - include: Entities
+    - include: Activity
+    - include: Sequence
+    - include: Usecase
+    - include: Class
+    - include: State
+    - include: Component
+    - include: Gerneral
+    - include: Strings
+    - include: Colors
+    - include: Preprocessings
+    - include: SimpleKeywords
+    - include: Constant
+  Styles:
+    # inline style
+      - match: |-
+          (?xi)
+          (?:\b(skinparam)\s+)
+          (\w+?)\s+
+          ((<<\s*.+?\s*>>)\s+)?
+          ([^\s\{\}]+?)\s*
+          $
+        captures:
+          1: support.class.skinparam.wsd
+          2: keyword.other.skinparam.keyword.wsd
+          4: constant.other.skinparam.keyword.wsd
+          5: string.quoted.double.skinparam.value.wsd
+    # style block
+      - match: (skinparam)(\s+(\w+?))?\s*\{\s*
+        captures:
+          1: support.class.skinparam.wsd
+          2: keyword.other.skinparam.keyword.wsd
+        push:
+          - include: StylesSubBlk
+          - match: (?<!\\)\}
+            pop: true
+  StylesSubBlk:
+    # recursion for sub block
+      - match: (\w+?)\s*\{\s*
+        captures:
+          1: keyword.other.skinparam.wsd
+        push:
+          - match: (?<!\\)\}
+            pop: true
+          - include: StylesSubBlk
+    # styles inside block
+      - match: (\w+?)\s+((<<\s*.+?\s*>>)\s+)?([^\{\}]+?)\s*$
+        captures: 
+          1: keyword.other.skinparam.keyword.wsd
+          3: constant.numeric.skinparam.keyword.wsd
+          4: string.quoted.double.skinparam.value.wsd
+  Strings:
+    # strings
+      - match: '"'
+        push: 
+          - meta_scope: string.quoted.double.wsd
+          - match: '"'
+            pop: true
+          - include: Creole
+          - include: Escape
+  Colors:
+    # color
+      - match: '(?i){{colorReg}}'
+        scope: constant.other.colors.wsd
+  Escape:
+    # begins with \
+      - match: \\.
+        scope: constant.character.escape.wsd
+  Entities:
+    # diagramObject
+      - match: ':.+?:|\[.+?\]|\(.+?\)'
+        scope: entity.other.item.wsd
+  AttachedDescription:
+    # begin with :
+      - match: (:)
+        set:
+          - meta_scope: comment.line.link.wsd
+          - include: Escape
+          - include: Creole
+          - match: $
+            pop: true
+  Constant:
+    # Upcase as constant
+      - match: \b[A-Z]+[A-Z_0-9]+\b
+        scope: constant.other.wsd
+  Creole:
+    # OpenIconic
+      - match: '<[&$][-a-z0-9A-Z]+>'
+        scope: support.class.iconic.creole.wsd
+    # Horizontal lines
+      - match: |-
+          (?xi)
+          {{lineBegin}}
+          ([.=_-]{2,})
+
+          (?:
+            \s*(.+?)\s*
+            ([.=_-]{2,})
+          )?
+          \s*$
+        captures:
+          1: comment.line.hl.creole.wsd
+          2: string.quoted.double.hl.creole.wsd
+          3: comment.line.hl.creole.wsd
+    # Bold
+      - match: (?:{{lineBegin}})?(\*{2})([^*]+?)(\*{2})
+        captures:
+          1: keyword.other.bold.creole.wsd
+          2: markup.bold.bold.creole.wsd
+          3: keyword.other.bold.creole.wsd
+    # underline
+      - match: (_{2})([^*]+?)(_{2})
+        captures:
+          1: keyword.other.underline.creole.wsd
+          2: markup.underline.underline.creole.wsd
+          3: keyword.other.underline.creole.wsd
+    # italic
+      - match: (/{2})([^*]+?)(/{2})
+        captures:
+          1: keyword.other.italic.creole.wsd
+          2: markup.italic.italic.creole.wsd
+          3: keyword.other.italic.creole.wsd
+    # monospaced
+      - match: ("{2})([^*]+?)("{2})
+        captures:
+          1: keyword.other.monospace.creole.wsd
+          2: markup.monospace.monospace.creole.wsd
+          3: keyword.other.monospace.creole.wsd
+    # stroked
+      - match: (-{2})([^*]+?)(-{2})
+        captures:
+          1: keyword.other.stroke.creole.wsd
+          2: markup.stroke.stroke.creole.wsd
+          3: keyword.other.stroke.creole.wsd
+    # waved
+      - match: (~{2})([^*]+?)(~{2})
+        captures:
+          1: keyword.other.wave.creole.wsd
+          2: markup.wave.wave.creole.wsd
+          3: keyword.other.wave.creole.wsd
+    # un-ordered List
+      - match: '{{lineBegin}}(\*+)'
+        captures:
+          1: keyword.other.ul.creole.wsd
+    # ordered List
+      - match: '{{lineBegin}}(\#+)'
+        captures:
+          1: keyword.other.ol.creole.wsd
+    # Headings
+      - match: '{{lineBegin}}(=+)(.+)\s*$|(?<=\|)(=+)(.+?)\s*(?=\|)'
+        captures:
+          1: keyword.other.heading.creole.wsd
+          2: entity.other.heading.creole.wsd
+          3: keyword.other.heading.creole.wsd
+          4: entity.other.heading.creole.wsd
+    # table or tree
+      - match: '{{lineBegin}}(\|)'
+        push:
+          - meta_scope: string.quoted.double.tabletree.creole.wsd
+          - match: $
+            pop: true
+          - include: Creole
+          - include: HTML
+  Markdown:
+    # use existed Creole syntax
+      - include: Packages/Creole/Creole.sublime-syntax
+  HTML:  
+    # use existed HTML syntax
+      - include: Packages/HTML/HTML.sublime-syntax
+  Stereotypes:
+    # <<(c,#112233) words>>
+      - match: |-
+          (?xi)
+          <<\s*
+            (
+              \(
+                ((\w)(,\s*({{colorReg}}))?)
+              \)
+            )?
+            (.+?)
+          \s*>>
+        captures: 
+          0: string.quoted.double.stereotype.color.wsd
+          3: constant.character.stereotype.wsd
+          5: constant.other.stereotype.color.wsd
+  Gerneral:
+    # scale 1.5, scale 2/3, scale 200 width, scale 200 height, scale 200*100, scale max 300*200
+      - match: |-
+          (?xi)
+          {{lineBegin}}
+          (scale)\s+
+          ((max)\s+)?
+          (\d+(\.?\d+)?)\s*
+          (
+            (
+              ("[\*/]")\s*
+              (\d+\.?(\.?\d+)?)
+            )|(
+              width|height
+            )
+          )?\s*$
+        captures:
+          1: keyword.other.scale.wsd
+          3: keyword.other.scale.wsd
+          4: constant.numeric.scale.wsd
+          8: keyword.operator.scale.wsd
+          9: constant.numeric.scale.wsd
+          11: keyword.other.scale.wsd
+    # comments
+      - match: '''.+$'
+        scope: comment.line.wsd
+      - match: (/')
+        push: 
+          - meta_scope: comment.block.wsd
+          - match: ('/)
+            pop: true
+    # title, enables ctrl+r jump list.
+      - match: (?xi)\b(title)\s*
+        captures:
+          1: keyword.other.wsd
+        push: 
+          - match: \w
+            set:
+              - meta_scope: entity.name.function.title.wsd
+              - include: Escape
+              - include: Creole
+              - match: $
+                pop: true
+          - match: $
+            set:
+              - meta_content_scope: entity.name.function.title.wsd
+              - include: Preprocessings
+              - include: Creole
+              - include: HTML
+              - match: (?i)\b(end\s*title)\b
+                scope: keyword.other.note.wsd
+                pop: true
+    # header, legend, footer.
+      - match: (?xi)\b(header|legend|footer)\s*
+        captures:
+          1: keyword.other.wsd
+        push: 
+          - match: \w
+            set:
+              - meta_scope: comment.line.headerlike.wsd
+              - include: Escape
+              - include: Creole
+              - match: $
+                pop: true
+          - match: $
+            set:
+              - meta_content_scope: comment.block.headerlike.wsd
+              - include: Preprocessings
+              - include: Creole
+              - include: HTML
+              - match: (?i)\b(end\s*(header|legend|footer))\b
+                scope: keyword.other.headerlike.wsd
+                pop: true
+              # comments
+              - match: '('').+$'
+                captures: 
+                  1: keyword.other.comment.headerlike.wsd
+    # note / note as
+      - match: (?i)\b([rh]?note)\b\s*
+        captures:
+          1: keyword.other.note.wsd
+        push:
+          - match: $
+            pop: true
+          - match: (?xi)\b(as)\s+({{varName}})\b
+            # note as <note_name> block
+            captures:
+              1: keyword.other.noteas.wsd
+              2: constant.other.noteas.wsd
+            push:
+              - meta_content_scope: comment.block.note.wsd
+              - include: Creole
+              - include: HTML
+              - match: (?i)\b(end\s*[rh]?note)\b
+                scope: keyword.other.note.wsd
+                pop: true
+          - match: (?=.)
+            set:
+              - include: Strings
+              - include: Colors
+              - include: AttachedDescription
+              - match: \bas\b
+                scope: keyword.other.note.wsd
+                # it's a inline note, pop the parent push
+                pop: true
+              - match: (?i)\b(left|right|bottom|top)\b
+                scope: constant.language.note.wsd
+              - match: \b(over|of|on)\b\s+({{diagramObject}})(?:\s*,\s*({{diagramObject}}))?
+                captures:
+                  1: keyword.other.wsd
+                  2: entity.other.wsd
+                  3: entity.other.wsd
+              - match: $
+                set:
+                  - meta_content_scope: comment.block.note.wsd
+                  - include: Creole
+                  - include: HTML
+                  - match: (?i)\b(end\s*[rh]?note)\b
+                    scope: keyword.other.note.wsd
+                    pop: true
+    # links
+      - match: |-
+          (?xi)
+          (
+            {{leftArrow}}
+            [-.]+
+            (\[{{colorReg}}\])?
+            (?:
+              (left|right|up|down)
+              (?:[-.])
+            )?
+            [-.]*
+            {{rightArrow}}
+          )
+        captures: 
+          1: keyword.operator.link.wsd
+          2: constant.other.link.color.wsd
+          3: constant.language.link.color.wsd
+          4: string.quoted.link.cardinality.wsd
+          5: link.object.wsd
+        push:
+          - match: $
+            pop: true
+          - include: Strings
+          - match: \bas\b
+            scope: keyword.other.as.link.wsd
+          - include: Colors
+          - include: Constant
+          - include: Entities
+          - include: AttachedDescription
+          # pretend to solve the conflict of namespace '.' and link '.'
+          - match: |-
+              (?xi)
+              (
+                {{leftArrow}}
+                [-.]+
+                (\[{{colorReg}}\])?
+                (?:
+                  (left|right|up|down)
+                  (?:[-.])
+                )?
+                [-.]*
+                {{rightArrow}}
+              )
+            captures: 
+              1: keyword.operator.link.wsd
+              2: constant.other.link.color.wsd
+              3: constant.language.link.color.wsd
+              4: string.quoted.link.cardinality.wsd
+              5: link.object.wsd
+    # sprite
+      - match: (?xi)(\b(sprite)\b)
+        scope: keyword.other.object.wsd 
+        push:
+          - match: (\$?{{varName}})
+            scope: support.other.sprite.creole.wsd
+          - match: '\{'
+            set:
+              - match: '{{lineBegin}}([0-9a-zA-Z_-]+)'
+                captures: 
+                  1: comment.line.sprite.wsd
+              - match: '(?<!\\)\}'
+                pop: true
+          - match: $
+            pop: true
+  Preprocessings:
+    - match: (?xi)(!enddefinelong|!definelong|!else|!endif|!include|!define|!ifndef|!ifdef)
+      scope: support.class.preprocessings.wsd
+  SimpleKeywords:
+    # general keywords
+      - match: (?xi)(@startuml|@enduml)
+        scope: keyword.other.wsd
+    # general keywords of Activity
+      - match: (?xi)(start|stop|end\s*split|split\s*again|split|repeat|fork\s*again|fork|end\s*fork|end\s*if|end\s*while|end|detach)
+        scope: keyword.other.activity.wsd  
+    # general keywords of Sequence
+      - match: (?xi)\b(as|create|actor|boundary|control|entity|database|participant|activate|deactivate|destroy|box|end\s*box|hide\s*footbox)\b
+        scope: keyword.other.sequence.wsd 
+    # general keywords of Usecase
+      - match: (?xi)\b(top\s+to\s+bottom\s+direction|left\s+to\s+right\s+direction|rectangle|usecase)\b
+        scope: keyword.other.usecase.wsd 
+    # general keywords of Class
+      - match: (?xi)\b(namespace|package)\b
+        scope: keyword.other.usecase.wsd 
+    # general keywords of Component
+      - match: (?xi)((?={{lineBegin}})\(\)|(\b(component|interface|package|node|folder|frame|cloud|database)\b))
+        scope: keyword.other.usecase.wsd 
+    # general keywords of State
+      - match: (?xi)(\[\*\]|(\b(component|interface|package|node|folder|frame|cloud|database|state)\b))
+        scope: keyword.other.usecase.wsd 
+    # general keywords of Object
+      - match: (?xi)(\b(object)\b)
+        scope: keyword.other.object.wsd 
+    # general keywords of Other
+      - match: (?xi)(\b(listopeniconic)\b)
+        scope: keyword.other.object.wsd 
+  Activity:
+    # if
+      - match: |-
+          (?xi)
+          (?:\b(if|while)\s+)
+          \s*\((.+?)\)\s*
+        captures:
+          1: keyword.other.activity.wsd
+          2: string.quoted.double.activity.wsd
+    # then, else, is
+      - match: |-
+          (?xi)
+          (?:\b(then|else|is|end\s*while)\s+)
+          \s*\((.+?)\)\s*
+        captures:
+          1: keyword.other.activity.wsd
+          2: comment.line.activity.wsd
+    # partition
+      - match: |-
+          (?xi)
+          (?:\b(partition)\s+)
+          \s*({{wordOrQuotedWord}})\s*
+        captures:
+          1: keyword.other.activity.wsd
+          2: string.quoted.double.activity.wsd
+    # Swimlanes
+      - match: (?<=\|).+?(?=\|)
+        scope: entity.other.activity.swimlanes.activity.wsd
+    # arrow text
+      - match: (?i){{lineBegin}}(-(\[{{colorReg}}\]))?->
+        captures:
+          2: constant.other.activity.arrow.color.wsd
+        push:
+          - meta_content_scope: comment.block.activity.arrow.wsd
+          - match: (;)
+            pop: true
+    # activity item
+      - match: (?i)(:)
+        push:
+          - meta_content_scope: entity.other.activity.wsd
+          - match: (?xi)([:;|<>/\]\}])
+            pop: true
+          - include: Escape
+          - include: Creole
+  Sequence:
+    # autonumber
+      - match: |-
+          (?xi)
+          (autonumber)
+          (\s+
+            (
+              \d+(\s+(\d+)?)?(\s+(".+?"))?
+              |
+              (stop)
+              |
+              (resume)(\s+(\d+))?(\s+".+?")?
+            )
+          )?
+        captures:
+          1: keyword.other.sequence.autonumber.wsd
+          3: constant.numeric.sequence.autonumber.wsd
+          5: constant.numeric.sequence.autonumber.wsd
+          7: string.quoted.double.sequence.autonumber.wsd
+          8: keyword.other.sequence.autonumber.wsd
+          9: keyword.other.sequence.autonumber.wsd
+          11: constant.numeric.sequence.autonumber.wsd
+          12: string.quoted.double.sequence.autonumber.wsd
+    # newpage & other
+      - match: (?i)(newpage|alt|else|opt|loop|par|break|critical|group)\b
+        scope: keyword.other.newpage.wsd
+        push:
+          - meta_content_scope: comment.line.newpage.wsd
+          - match: $
+            pop: true
+          - include: Escape
+          - include: Creole
+    # divider
+      - match: '{{lineBegin}}(={2})\s*'
+        captures:
+          1: keyword.operator.sequence.divider.wsd
+        push:
+          - meta_content_scope: comment.line.sequence.divider.wsd
+          - include: Escape
+          - match: ={2}(?=\s*$)
+            scope: keyword.operator.sequence.divider.wsd
+            pop: true
+          - match: (.?$)
+            #meta_scope: comment.line.sequence.divider.wsd
+            scope: invalid.illegal.no-divider-end
+            pop: true
+    # delay
+      - match: '{{lineBegin}}(\.{3})\s*'
+        captures:
+          1: keyword.operator.sequence.divider.wsd
+        push:
+          - meta_content_scope: comment.line.sequence.divider.wsd
+          - include: Escape
+          - match: \.{3}(?=\s*$)
+            scope: keyword.operator.sequence.divider.wsd
+            pop: true
+          - match: (.?$)
+            #meta_scope: comment.line.sequence.divider.wsd
+            scope: invalid.illegal.no-divider-end
+            pop: true
+    # ommition ...
+      - match: (?i)^\s*(\.{3,})\s*$
+        captures:
+          1: keyword.operator.sequence.omission.wsd
+    # note / note as
+      - match: (?i)\b(ref)\b\s*
+        captures:
+          1: keyword.other.ref.wsd
+        set:
+          - include: Strings
+          - include: Colors
+          - include: AttachedDescription
+          - match: $
+            set:
+              - meta_content_scope: comment.block.ref.wsd
+              - include: Creole
+              - include: HTML
+              - match: (?i)\b(end\s*[rh]?ref)\b
+                scope: keyword.other.ref.wsd
+                pop: true
+          - match: \b(over)\b\s+({{diagramObject}})(?:\s*,\s*({{diagramObject}}))?
+            captures:
+              1: keyword.other.wsd
+              2: entity.other.wsd
+              3: entity.other.wsd
+    # Space
+      - match: (\|{2,})(\d+)?(\|{1,})
+        captures:
+          1: keyword.operator.sequence.space.wsd
+          2: constant.numeric.sequence.space.wsd
+          3: keyword.operator.sequence.space.wsd
+  Usecase:
+    # actor definition
+      - match: (?xi)\bactor\b
+        scope: keyword.other.actor.usecase.wsd
+        push:
+          - match: $
+            pop: true
+          - include: Stereotypes
+          - include: Strings
+          - include: Colors
+          - match: (:)
+            push:
+              - meta_content_scope: actor.usecase.wsd
+              - match: (:)
+                pop: true
+              - include: Escape
+              - include: Creole
+          - match: (?xi)\bas\b
+            scope: keyword.other.as.usecase.wsd
+          - match: \"
+            push:
+              - match: \"
+                pop: true
+              - meta_content_scope: usecase.wsd
+              - include: Escape
+              - include: Creole
+              - include: HTML
+  Class:
+    # add methods
+      - match: (?xi){{lineBegin}}{{wordOrQuotedWord}}\s*(:)
+        push:
+          - meta_content_scope: comment.line.addmethod.class.wsd
+          - match: $
+            pop: true
+          - match: \{(static|abstract)\}
+            scope: storage.modifier.addmethod.class.wsd
+          - match: ([~#+-])
+            scope: storage.modifier.addmethod.visibility.class.wsd
+          - match: '({{varName}})\s*\((.*?)\)'
+            captures: 
+              1: entity.other.body.class.wsd
+              2: variable.parameter.body.class.wsd
+    # class & annotation & enum definition
+      - match: (?xi)\b(annotation|enum|abstract\s+class|abstract|class)\b\s+
+        scope: keyword.other.class.wsd
+        push:
+          - match: $
+            pop: true
+          - include: Stereotypes
+          - include: Strings
+          - include: Colors
+          - match: <.+?>
+            scope: string.quoted.double.generic.class.wsd
+          - match: (?xi)\bas\b
+            scope: keyword.other.as.class.wsd
+          - match: \{
+            push:
+                - match: (?<!\\)\}
+                  pop: true
+              # body separator
+                - match: |-
+                    (?xi)
+                    {{lineBegin}}
+                    ([.=_-]{2,})
+
+                    (?:
+                      \s*(.+?)\s*
+                      ([.=_-]{2,})
+                    )?
+                    \s*$
+                  captures:
+                    1: comment.line.class.group.separator.wsd
+                    2: string.quoted.double.class.group.separator.wsd
+                    3: comment.line.class.group.separator.wsd
+                - include: Strings
+                - include: Colors
+                - include: Constant
+              # function & fileds
+                - match: (?xi)(?:(\{(?:static|abstract)\})|([~#+-]))
+                  captures:
+                    1: storage.modifier.class.fileds.wsd
+                    2: keyword.other.class.fileds.wsd
+                  push:
+                    - match: $
+                      pop: true
+                    - match: (?xi)(\{(?:static|abstract)\})
+                      captures:
+                        1: storage.modifier.class.fileds.wsd
+                    - match: (?xi)([~#+-])
+                      captures:
+                        1: keyword.other.class.fileds.wsd
+                    - match: |-
+                        (?xi)
+                        (?:
+                            (?:(\w+(?:\[\])?)\s+)?
+                            (
+                                {{varName}}+
+                                (?:\s*\(\))?
+                            )
+                        |
+                            (
+                                {{varName}}+
+                                (?:\s*\(\))?
+                            )
+                            (?:\s*:\s*(\w+))?
+                        )\s*$
+                      captures:
+                        1: support.type.class.fileds.wsd
+                        2: entity.other.class.fileds.wsd
+                        3: entity.other.class.fileds.wsd
+                        4: support.type.class.fileds.wsd
+    # hide / show
+      - match: (?xi)\b(hide|show)\b
+        scope: keyword.other.hideshow.wsd
+        push:
+          - match: $
+            pop: true
+          - include: Stereotypes
+          - include: Strings
+          - include: Colors
+          - include: Constant
+          - match: (?xi)\b(Stereotypes|class|interface|enum|empty\s+fields|empty methods|fields|attributes|methods|members|circle)\b
+            scope: constant.language.hideshow.wsd
+  State:
+    # state definition
+      - match: (?xi)\b(state)\b
+        captures: 
+          1: keyword.other.state.wsd
+        push:
+          - match: $
+            pop: true
+          - include: Strings
+          - include: Stereotypes
+          - include: Colors
+          - include: AttachedDescription
+          - match: (?i)\bas\b
+            scope: keyword.other.as.wsd
+    # point
+      - match: \[\*\]
+        scope: keyword.other.state.wsd
+  Component:
+    # concurrent state
+      - match: (?i)^\s*(-{2,})\s*$
+        captures:
+          1: keyword.operator.concurrent.state.wsd
+
+  Salt:
+    # Salt block start
+      - match: (?xi){{lineBegin}}(@startsalt|salt)
+        captures: 
+          1: keyword.other.salt.wsd
+        push:
+          - match: (?xi){{lineBegin}}(@endsalt|@enduml)
+            captures: 
+              1: keyword.other.salt.wsd
+            pop: true
+          - include: SaltBlock
+          - include: SaltInside
+  SaltBlock:
+    # block
+      - match: \{
+        captures: 
+          0: start.block.salt.wsd
+        push:
+          # block ends
+            - match: (?<!\\)\}
+              scope: end.block.salt.wsd
+              pop: true
+          # the block itself is a container
+            - include: SaltBlock
+            - include: SaltInside
+            - include: SaltSplitor
+          # container block
+            - match: '[+!#-]'
+              scope: keyword.other.grid.salt.wsd
+              set:
+                - match: (?<!\\)\}
+                  scope: end.block.salt.wsd
+                  pop: true
+                # sub sub blocks
+                - include: SaltBlock
+                - include: SaltInside
+                - include: SaltSplitor
+          # Tree
+            - match: \bT\b
+              scope: keyword.other.tree.salt.wsd
+              set:
+                - match: (\++)\s*
+                  captures:
+                    1: keyword.other.item.tree.salt.wsd
+                  push:
+                    - meta_content_scope: comment.line.item.tree.salt.wsd
+                    - match: $
+                      pop: true
+                    - include: SaltSplitor
+                    - include: Creole
+                    - include: HTML
+                - match: (?<!\\)\}
+                  scope: end.treeblock.salt.wsd
+                  pop: true
+                - include: SaltSplitor
+          # Tabs
+            - match: /
+              scope: keyword.other.tab.salt.wsd
+              set:
+                - match: ({{noSaltSymbol}}+)
+                  captures:
+                    1: constant.numeric.tab.salt.wsd
+                - match: (?<!\\)\}
+                  scope: end.tabblock.salt.wsd
+                  pop: true
+                - include: SaltSplitor
+                - include: HTML
+          # Menus
+            - match: \*
+              scope: keyword.other.menu.salt.wsd
+              set:
+                - match: ({{noSaltSymbol}}+)
+                  captures:
+                    1: support.class.menu.tree.salt.wsd
+                - match: (?<!\\)\}
+                  scope: end.menublock.salt.wsd
+                  pop: true
+                - include: SaltSplitor
+                - include: HTML
+  SaltInside:
+    # checkbox
+      - match: |-
+          (?xi)
+          (
+            [(\[]
+            ([X\s])?
+            [)\]]
+          )
+          \s*
+          ({{noSaltSymbol}}+)
+        captures:
+          1: support.class.checkbox.salt.wsd
+          2: string.quoted.double.checkbox.salt.wsd
+          3: comment.line.checkbox.salt.wsd
+    # button
+      - match: \[({{noSaltSymbol}}+)?\]
+        scope: entity.other.button.salt.wsd
+    # input
+      - match: \"({{noSaltSymbol}}+)?\"
+        scope: support.class.input.salt.wsd
+    # droplist
+      - match: (?xi)(\^)((?:{{noSaltSymbol}}|\^)+)(\^)
+        captures: 
+          1: keyword.other.droplist.salt.wsd
+          2: comment.line.droplist.salt.wsd
+          3: keyword.other.droplist.salt.wsd
+    # separator
+      - match: '[=~.-]{2,}'
+        scope: comment.line.separator.salt.wsd
+    # HTML and Creole
+      - include: HTML
+      # can't deal with | split
+      #- include: Creole
+  SaltSplitor:
+    # Splitor
+      - match: '\|'
+        scope: keyword.other.tab.salt.wsd

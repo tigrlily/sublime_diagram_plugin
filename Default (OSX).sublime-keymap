@@ -1,3 +1,3 @@
 [
-    {"keys": ["super+m"], "command": "display_diagrams"}
+    {"keys": ["alt+d"], "command": "preview_diagrams"}
 ]

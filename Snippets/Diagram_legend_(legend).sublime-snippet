@@ -1,0 +1,10 @@
+<snippet>
+ <content><![CDATA[
+legend
+    ${4:legend text}
+end legend
+]]></content>
+ <tabTrigger>legend</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>General: add legend</description>
+</snippet>

@@ -1,0 +1,10 @@
+<snippet>
+ <content><![CDATA[
+@startuml
+sudoku ${1:optionalSeed}
+@enduml
+]]></content>
+ <tabTrigger>sudoku</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Tools: sudoku</description>
+</snippet>

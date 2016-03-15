@@ -17,4 +17,5 @@ class WindowsDefaultViewer(BaseViewer):
 
     def view(self, diagram_files):
         for f in diagram_files:
+            #print(f.name)
             execute(f.name)

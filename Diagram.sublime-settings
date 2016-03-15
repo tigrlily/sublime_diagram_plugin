@@ -1,5 +1,10 @@
 {
-	"viewer" : "Preview", // Preview, QuickLook, EyeOfGnome, WindowsDefaultViewer
-	"check_on_startup": true,
-	"charset": null // Can be "UTF-8" - to support non-latin text in diagram
+    // Sublime3Viewer support all platforms, but only support format PNG, Sublime Text 3
+    // If format set to options other than png, viewer setting of Sublime3Viewer will be ignored.
+    "viewer" : "Sublime3Viewer", // Sublime3Viewer, WindowsDefaultViewer, QuickLookViewer, EyeOfGnomeViewer, PreviewViewer, FreedesktopDefaultViewer
+    //check java, plantuml version, and plantuml functionality. set to false to reduce freeze time when sublime startup
+    "check_on_startup": true,  //true, false
+    // Can be "UTF-8" - to support non-latin text in diagram
+    "charset": "UTF-8", // UTF-8, UTF-16BE, UTF-16LE, UTF-16, ISO-8859-1
+    "format": "png" // png, svg, eps, latex
 }

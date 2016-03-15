@@ -1,0 +1,11 @@
+<snippet>
+ <content><![CDATA[
+repeat
+    :${1:do something};
+repeat while (${2:condition}) is (${3:result})
+->${3:resultOther};
+]]></content>
+ <tabTrigger>repeat</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Activity: repeat loop</description>
+</snippet>

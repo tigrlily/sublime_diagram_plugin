@@ -1,0 +1,11 @@
+<snippet>
+ <content><![CDATA[
+partition ${1:Group Name} {
+    :${2:do something};
+    :${3:do something};
+}
+]]></content>
+ <tabTrigger>partition</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Activity: Grouping</description>
+</snippet>

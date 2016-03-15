@@ -1,6 +1,74 @@
 [
-  {
-    "caption": "Diagram: Generate Diagrams for Active View",
-    "command": "display_diagrams"
-  }
+    {
+        "caption": "Diagram: Preview Diagrams for Active View",
+        "command": "preview_diagrams"
+    },
+    {
+        "caption": "Diagram: View PlantUML Document",
+        "command": "plantuml_document"
+    },
+    {
+        "caption": "Preferences: Diagram Settings – Default",
+        "command": "open_file",
+        "args":
+        {
+            "file": "${packages}/sublime_diagram_plugin/Diagram.sublime-settings"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Settings – User",
+        "command": "open_file",
+        "args":
+        {
+            "file": "${packages}/User/Diagram.sublime-settings"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Key Bindings – Default",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/sublime_diagram_plugin/Default (Windows).sublime-keymap",
+            "platform": "Windows"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Key Bindings – Default",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/sublime_diagram_plugin/Default (OSX).sublime-keymap",
+            "platform": "OSX"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Key Bindings – Default",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/sublime_diagram_plugin/Default (Linux).sublime-keymap",
+            "platform": "Linux"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Key Bindings – User",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/User/Default (Windows).sublime-keymap",
+            "platform": "Windows"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Key Bindings – User",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/User/Default (OSX).sublime-keymap",
+            "platform": "OSX"
+        }
+    },
+    {
+        "caption": "Preferences: Diagram Key Bindings – User",
+        "command": "open_file",
+        "args": {
+            "file": "${packages}/User/Default (Linux).sublime-keymap",
+            "platform": "Linux"
+        }
+    }
 ]

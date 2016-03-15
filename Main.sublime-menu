@@ -16,19 +16,27 @@
                         "children":
                         [
                             {
-                                "command": "display_diagrams",
-                                "caption": "Display Diagrams"
+                                "command": "preview_diagrams",
+                                "caption": "Preview Diagrams"
+                            },
+                            {
+                                "command": "build_diagrams",
+                                "caption": "Build Diagrams"
                             },
                             { "caption": "-" },
                             {
-                                "command": "open_file",
-                                "args": {"file": "${packages}/sublime_diagram_plugin/README.md"},
-                                "caption": "README"
+                                "command": "plantuml_document",
+                                "caption": "PlantUML Document"
                             },
                             {
                                 "command": "open_file",
-                                "args": {"file": "${packages}/sublime_diagram_plugin/samples/EXAMPLE.wsd"},
-                                "caption": "EXAMPLE"
+                                "args": {"file": "${packages}/sublime_diagram_plugin/readme.md"},
+                                "caption": "Readme"
+                            },
+                            {
+                                "command": "open_file",
+                                "args": {"file": "${packages}/sublime_diagram_plugin/samples/example.wsd"},
+                                "caption": "Example"
                             },
                             { "caption": "-" },
                             {

@@ -1,0 +1,10 @@
+<snippet>
+ <content><![CDATA[
+while (${1:condition}) is (${2:result})
+    :${3:do something};
+endwhile (${4:resultOther})
+]]></content>
+ <tabTrigger>while</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Activity: while loop</description>
+</snippet>

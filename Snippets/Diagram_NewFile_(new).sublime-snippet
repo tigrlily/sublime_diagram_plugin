@@ -1,0 +1,11 @@
+<snippet>
+ <content><![CDATA[
+@startuml
+title ${1:title}
+    ${2:}
+@enduml
+]]></content>
+ <tabTrigger>new</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>General: new diagram</description>
+</snippet>

@@ -1,0 +1,47 @@
+<snippet>
+ <content><![CDATA[
+@startuml
+xearth(500,500)
+'Fixed position
+viewPositionType = Fixed
+viewPosLat = 30.3
+viewPosLong = 120.2
+''Relative view from Sun
+'viewPositionType = Sun-relative
+'sunPosRelLat = -10
+'sunPosRelLong = 40
+''Relative view from Moon
+'viewPositionType = Moon
+'daySideBrightness = 100
+'nightSideBrightness = 30
+''View set by orbit
+'viewPositionType = Orbit
+'orbitPeriod = 1
+'orbitInclination = 30
+''Add more stars
+'starsP = true
+'starFrequency = 0.025
+'bigStars = 20
+''grid configuration
+'gridP = true
+'gridDivision = 9
+'gridPixelDivision = 8
+''shading
+'shadeP = true
+''grid
+'gridP = true
+''luminosity
+'daySideBrightness = 100
+'nightSideBrightness = 30
+'terminatorDiscontinuity = 50
+'Zooming
+viewMagnification = 1
+'Adding cities
+39.92 116.43 "Beijing" # China
+30.3 120.2 "Hangzhou" # China
+@enduml
+]]></content>
+ <tabTrigger>earth</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Tools: xearth</description>
+</snippet>

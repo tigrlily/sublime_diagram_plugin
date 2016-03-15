@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plist version="1.0">
+<dict>
+    <key>scope</key>
+    <string>source.wsd entity.name.function.title.wsd </string>
+    <key>settings</key>
+    <dict>
+        <key>showInIndexedSymbolList</key>
+        <string>1</string>
+        <key>symbolTransformation</key>
+        <string>
+            s/\s*[\*#=\|]*\s*(.+?)\s*(\n|(?&lt;!\\)\\[nr]).+/$1/g
+            s/(?&lt;!\\)\\t/ /g
+            s/\\\\/\\/g
+            s/\|(\s*[\*#=\|]*)?\s*/ /g
+            s/\*{2}(.+)\*{2}/$1/g
+            s/_{2}(.+)_{2}/$1/g
+            s/\/{2}(.+)\/{2}/$1/g
+            s/"{2}(.+)"{2}/$1/g
+            s/-{2}(.+)-{2}/$1/g
+            s/~{2}(.+)~{2}/$1/g
+	</string>
+    </dict>
+</dict>
+</plist>

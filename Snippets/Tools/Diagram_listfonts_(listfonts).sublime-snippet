@@ -1,0 +1,10 @@
+<snippet>
+ <content><![CDATA[
+@startuml
+listfonts ${1:test characters}
+@enduml
+]]></content>
+ <tabTrigger>listfonts</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>Tools: list fonts</description>
+</snippet>

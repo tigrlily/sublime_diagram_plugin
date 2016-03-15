@@ -1,0 +1,8 @@
+<snippet>
+ <content><![CDATA[
+note ${1:right}${2:left}: ${3:note lines}
+]]></content>
+ <tabTrigger>note</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>General: inline note</description>
+</snippet>

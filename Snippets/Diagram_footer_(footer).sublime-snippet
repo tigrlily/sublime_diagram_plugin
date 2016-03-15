@@ -1,0 +1,10 @@
+<snippet>
+ <content><![CDATA[
+footer 
+    ${1:footer text}
+end footer
+]]></content>
+ <tabTrigger>footer</tabTrigger>
+ <scope>source.wsd</scope>
+ <description>General: add footer</description>
+</snippet>
