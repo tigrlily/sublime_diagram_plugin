@@ -12,6 +12,7 @@ from sublime import error_message, message_dialog, status_message, load_settings
 import sys
 
 INITIALIZED = False
+RELOAD_ON_SAVE = False
 AVAILABLE_PROCESSORS = [PlantUMLProcessor]
 AVAILABLE_VIEWERS = [
     Sublime3Viewer,
@@ -38,6 +39,7 @@ def setup():
     global ACTIVE_PROCESSORS
     global ACTIVE_VIEWER
     global SUBLIME_SETTINGS
+    global RELOAD_ON_SAVE
 
     ACTIVE_PROCESSORS = []
     ACTIVE_VIEWER = None
@@ -56,7 +58,7 @@ def setup():
             proc.CHECK_ON_STARTUP = SUBLIME_SETTINGS.get('check_on_startup')
             proc.load()
             ACTIVE_PROCESSORS.append(proc)
-            #print("Loaded processor: %r" % proc)
+            #print("Loaded (processor): %r" % proc)
         except Exception:
             print("Unable to load processor: %r" % processor)
             sys.excepthook(*sys.exc_info())
@@ -99,11 +101,16 @@ def setup():
         raise Exception('No working viewers found!')
 
     INITIALIZED = True
+    RELOAD_ON_SAVE = SUBLIME_SETTINGS.get('reload_on_save')
+    print(RELOAD_ON_SAVE)
     #print("Processors: %r" % ACTIVE_PROCESSORS)
     #print("Viewer: %r" % ACTIVE_VIEWER)
 
+def process(view,isPreview, isTriggerdByReload=False):
 
-def process(view,isPreview):
+    # Ignore this request
+    if isTriggerdByReload and not RELOAD_ON_SAVE:
+        return True
 
     diagrams = []
 

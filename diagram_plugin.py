@@ -1,4 +1,5 @@
 ﻿from sublime_plugin import TextCommand, WindowCommand
+import sublime_plugin
 from sublime import error_message, version, Region
 try:
     from .diagram import setup, process, document
@@ -29,10 +30,22 @@ class BuildDiagramsCommand(WindowCommand):
             return error_message("No diagrams overlap selections.\n\n" \
                 "Nothing to process.")
 
+class PreviewOnSave(sublime_plugin.EventListener):
+    def on_post_save(self, view):
+
+        if view.file_name() in previewed_files:
+            if not process(view, True, True):
+                error_message("No diagrams overlap selections.\n\n" \
+                    "Nothing to process.")
+
 class PreviewDiagrams(TextCommand):
     def run(self, edit):
         #print("Processing diagrams in %r..." % self.view)
         self.selCurDiagram()
+
+        # Save file name, and use for automatic preview on save
+        previewed_files[self.view.file_name()] = True
+
         if not process(self.view, True):
             error_message("No diagrams overlap selections.\n\n" \
                 "Nothing to process.")

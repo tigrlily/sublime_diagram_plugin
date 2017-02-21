@@ -4,6 +4,7 @@ from .base import BaseProcessor
 from subprocess import Popen as execute, PIPE, STDOUT, call
 from os.path import abspath, dirname, exists, join, split, splitext, isabs, isdir
 from os import makedirs
+import os
 from tempfile import NamedTemporaryFile, gettempdir
 from platform import system
 from sublime import Region, status_message, error_message
@@ -31,9 +32,9 @@ class PlantUMLDiagram(BaseDiagram):
         status_message("Generating Diagram: "+fileName)
 
         if isPreview:
-            outputfile = gettempdir()+'\\TempDiagrams\\'+fileName
+            outputfile = os.sep.join([gettempdir(), 'TempDiagrams', fileName])
         else:
-            outputfile = startDir+'\\'+fileName
+            outputfile = os.sep.join([startDir, fileName])
         print(outputfile)
 
         newPath = split(outputfile)[0]
