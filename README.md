@@ -71,6 +71,7 @@ This is a modified version from [jvantuyl](https://github.com/jvantuyl/sublime_d
 - PlantUML **Document** intergrated.
 - Key binding, menu, command changes
 - Brief console messages
+- Option for automatic reload on save of already previewed file
 
 ## Operations
 

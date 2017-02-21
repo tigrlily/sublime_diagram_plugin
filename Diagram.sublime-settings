@@ -7,5 +7,6 @@
     // Can be "UTF-8" - to support non-latin text in diagram
     "charset": "UTF-8", // UTF-8, UTF-16BE, UTF-16LE, UTF-16, ISO-8859-1
     "format": "png", // png, svg, eps, latex
-    "reload_on_save": true,  //true, false
+    // Automatic reload on save of already previewed file
+    "reload_on_save": false,  //true, false
 }
